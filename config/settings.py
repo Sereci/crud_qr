@@ -9,7 +9,11 @@ SECRET_KEY = 'f3c8e7766e9b4d2fae9e7389a2b217cd'
 
 # Configuración de depuración y hosts permitidos
 DEBUG = False
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['.onrender.com','127.0.0.1:8000']
+=======
+ALLOWED_HOSTS = ['*']
+>>>>>>> origin/main
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
