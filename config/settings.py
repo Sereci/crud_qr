@@ -8,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'f3c8e7766e9b4d2fae9e7389a2b217cd'
 
 # Configuración de depuración y hosts permitidos
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 # Aplicaciones instaladas
@@ -93,8 +93,6 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
-
-CSRF_TRUSTED_ORIGINS = ['https://crud-qr.onrender.com']
 
 # Configuración de Internacionalización
 LANGUAGE_CODE = 'es'
