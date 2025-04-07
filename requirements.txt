@@ -1,12 +1,14 @@
 Django>=4.0,<5.0
 djangorestframework
+djangorestframework-authtoken
+mysqlclient
 qrcode
 flask
 werkzeug
+qrcode
+mysql-connector-python
 reportlab
 babel
 chardet
-Pillow
-qrcode[pil]
+qrcode[pil] Pillow
 djangorestframework
-psycopg2-binary>=2.9,<3.0

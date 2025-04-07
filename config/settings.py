@@ -1,5 +1,4 @@
 import os
-import dj_database_url  # Requiere agregarlo al requirements.txt
 
 # BASE_DIR: Ruta base del proyecto
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -58,10 +57,14 @@ TEMPLATES = [
 
 # Configuración de base de datos (ajustar según sea necesario)
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgres://postgres:Bolivia2025@localhost:5432/crud_qr',
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'railway',
+        'USER': 'root',
+        'PASSWORD': 'jcRSSKekMICpnwKnNunHpBLdiabZcLPj',
+        'HOST': 'maglev.proxy.rlwy.net',
+        'PORT': '27039',
+    }
 }
 
 # Configuración de autenticación(revisar)
