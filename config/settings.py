@@ -1,6 +1,5 @@
 import os
 
-PORT = os.environ.get('PORT', '8000')
 
 # BASE_DIR: Ruta base del proyecto
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
