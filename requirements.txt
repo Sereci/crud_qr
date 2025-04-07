@@ -1,11 +1,8 @@
 Django>=4.0,<5.0
 djangorestframework
-//djangorestframework-authtoken
-mysqlclient
 qrcode
 flask
 werkzeug
-mysql-connector-python
 reportlab
 babel
 chardet
