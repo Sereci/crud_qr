@@ -1,0 +1,54 @@
+<h1>Bienvenido, Administrador</h1>
+<p>Aquí puedes gestionar usuarios y sistemas.</p>
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Dashboard Admin</h1>
+
+<!-- Mostrar los ítems si el usuario tiene permiso -->
+{% if can_view_items %}
+    <h2>Ítems</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No tienes permisos para ver los ítems.</p>
+{% endif %}
+
+<!-- Mostrar los usuarios si el usuario tiene permiso -->
+{% if can_view_users %}
+    <h2>Usuarios</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre de usuario</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.status }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No tienes permisos para ver los usuarios.</p>
+{% endif %}
+
+{% endblock %}

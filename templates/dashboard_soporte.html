@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Soporte</title>
+    <script>
+        function actualizarEstado(tareaId) {
+            const nuevoEstado = document.getElementById(`estado-${tareaId}`).value;
+
+            fetch('/api/cambiar_estado/', {
+        
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ tarea_id: tareaId, nuevo_estado: nuevoEstado })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Estado actualizado correctamente');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>Solicitudes Asignadas</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Actualizar</th>
+        </tr>
+        {% for tarea in tareas %}
+        <tr>
+            <td>{{ tarea.id }}</td>
+            <td>{{ tarea.description }}</td>
+            <td>
+                <select id="estado-{{ tarea.id }}">
+                    <option value="pendiente" {% if tarea.estado == "pendiente" %}selected{% endif %}>Pendiente</option>
+                    <option value="en_progreso" {% if tarea.estado == "en_progreso" %}selected{% endif %}>En Progreso</option>
+                    <option value="completado" {% if tarea.estado == "completado" %}selected{% endif %}>Completado</option>
+                </select>
+            </td>
+            <td><button onclick="actualizarEstado({{ tarea.id }})">Actualizar</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

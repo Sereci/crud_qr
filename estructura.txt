@@ -1,0 +1,56 @@
+crud_qr_project/          # Carpeta raíz del proyecto
+│── manage.py             # Script para administrar el proyecto Django
+│── db.mySql            # Base de datos 
+│── requirements.txt      # Lista de dependencias del proyecto
+│── config/               # Configuración global del proyecto
+│   │── __init__.py
+│   │── settings.py       # Configuración de Django (INSTALLED_APPS, DATABASES, etc.)
+│   │── urls.py           # Enrutamiento global del proyecto
+│   │── wsgi.py           # Archivo WSGI para servidores de producción
+│   │── asgi.py           # Archivo ASGI para WebSockets u otras aplicaciones asíncronas
+│── app/                  # Aplicación principal donde está el CRUD
+│   │── __init__.py
+│   │── models.py         # Definición de los modelos (User, Item con QR)
+│   │── views.py          # Lógica de las vistas con DRF
+│   │── serializers.py    # Serializadores para transformar datos JSON
+│   │── urls.py           # Enrutamiento de la API
+│   │── permissions.py    # Permisos personalizados para roles de usuario
+│   │── admin.py          # Configuración de modelos en el panel de administración
+│   │── tests.py          # Pruebas unitarias
+│   │── apps.py           # Configuración de la app Django
+│── static/               # Archivos estáticos (CSS, JS, imágenes)
+│── media/                # Archivos subidos (QR generados)
+│── env/                  # (Opcional) Entorno virtual de Python
+
+
+requisitos 
+
+pip install djangorestframework djangorestframework-simplejwt
+pip install mysqlclient
+pip install qrcode[pil]
+control_padron
+Sereci
+______________________________________
+Authorization: Token TU_TOKEN
+python manage.py migrate auth zero
+python manage.py migrate contenttypes zero
+python manage.py migrate sessions zero
+_________________________________________
+python manage.py makemigrations app
+python manage.py migrate
+B10_8337147
+import requests
+
+url = "http://127.0.0.1:8000/api/token/"
+data = {"username": "raul.choque", "password": "B10_8337147"}
+response = requests.post(url, json=data)
+print(response.json())
+_________________________________________________
+curl -X POST http://127.0.0.1:8000/api/token/ \
+     -H "Content-Type: application/json" \
+     -d '{"username": "raul.choque", "password": "B10_8337147"}'
+
+raul.choque {
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0MDk5MDIyNCwiaWF0IjoxNzQwOTAzODI0LCJqdGkiOiIwYjU3M2FkZjQ0M2M0MjcyOGU2OTAxOTA0OGM4ZmVhMCIsInVzZXJfaWQiOjJ9.VCj5MKkRUPS0WH_swOv4tsMVuEgtO1IxaPigeK95kVg",
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQwOTA0MTI0LCJpYXQiOjE3NDA5MDM4MjQsImp0aSI6IjM0NTU2NzdiOGJkMzRjY2U5MTY3MGIzZDFkNjA1ODkyIiwidXNlcl9pZCI6Mn0.-HqIY33tPHsUpXerZOnACwy5XAKzpsDlpE7jv6IX2lg"
+}
