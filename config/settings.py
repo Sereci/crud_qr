@@ -9,7 +9,7 @@ SECRET_KEY = 'f3c8e7766e9b4d2fae9e7389a2b217cd'
 
 # Configuración de depuración y hosts permitidos
 DEBUG = True
-ALLOWED_HOSTS = ['crud-qr.onrender.com']
+ALLOWED_HOSTS = ['*']
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
@@ -93,6 +93,8 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
+
+CSRF_TRUSTED_ORIGINS = ['https://crud-qr.onrender.com']
 
 # Configuración de Internacionalización
 LANGUAGE_CODE = 'es'
