@@ -1,5 +1,7 @@
 import os
 
+PORT = os.environ.get('PORT', '8000')
+
 # BASE_DIR: Ruta base del proyecto
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -8,7 +10,7 @@ SECRET_KEY = 'f3c8e7766e9b4d2fae9e7389a2b217cd'
 
 # Configuración de depuración y hosts permitidos
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['crud-qr.onrender.com']
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
