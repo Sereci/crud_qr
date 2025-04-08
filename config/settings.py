@@ -9,7 +9,7 @@ SECRET_KEY = 'f3c8e7766e9b4d2fae9e7389a2b217cd'
 
 # Configuración de depuración y hosts permitidos
 DEBUG = True
-ALLOWED_HOSTS = ['crud-qr.onrender.com']
+ALLOWED_HOSTS = ['crud-qr.onrender.com','127.0.0.1']
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
@@ -103,5 +103,5 @@ USE_TZ = True
 
 #Origenes seguros
 CSRF_TRUSTED_ORIGINS = [
-    'https://crud-qr.onrender.com',
+    'https://crud-qr.onrender.com','http://127.0.0.1s',
 ]
