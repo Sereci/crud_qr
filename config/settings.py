@@ -105,3 +105,4 @@ USE_TZ = True
 CSRF_TRUSTED_ORIGINS = [
     'https://crud-qr.onrender.com','http://127.0.0.1s',
 ]
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
