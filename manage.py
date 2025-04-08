@@ -13,3 +13,12 @@ if __name__ == "__main__":
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
+
+User = get_user_model()
+from django.contrib.auth import get_user_model
+
+admin = User.objects.get(username='admin')
+admin.set_password('admin')
+admin.save()
+
+print("Contraseña actualizada correctamente.")
