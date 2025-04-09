@@ -1,2 +1,57 @@
-./app/__pycache__
-./config/__pycache__
+# Git ignore Django
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+env/
+venv/
+ENV/
+.venv/
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+*.db
+
+# Media and static files
+/media/
+static/
+
+# Local settings
+.env
+.env.*
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# MyPy
+.mypy_cache/
+
+# IDEs
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Git
+*.orig
+
+# Pip
+pip-wheel-metadata/
