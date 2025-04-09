@@ -63,12 +63,19 @@ TEMPLATES = [
 # Configuración de base de datos (ajustar según sea necesario)
 DATABASES = {
     'default': {
+        #'ENGINE': 'django.db.backends.mysql',
+        #'NAME': 'railway_backup',
+        #'USER': 'root',
+        #'PASSWORD': 'jcRSSKekMICpnwKnNunHpBLdiabZcLPj',
+        #'HOST': 'maglev.proxy.rlwy.net',
+        #'PORT': '27039',
+
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'railway',
         'USER': 'root',
-        'PASSWORD': 'jcRSSKekMICpnwKnNunHpBLdiabZcLPj',
-        'HOST': 'maglev.proxy.rlwy.net',
-        'PORT': '27039',
+        'PASSWORD': 'ZXrMXGcfgozFYbQNDroXRhhSmgLpZqYz',
+        'HOST': 'switchback.proxy.rlwy.net',
+        'PORT': '59091'
     }
 }
 
