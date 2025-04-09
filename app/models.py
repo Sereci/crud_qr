@@ -81,7 +81,19 @@ class Item(models.Model):
                          f"R: {self.cont_R}    C:{self.cont_C}\n"
                          f"asignado: {self.asignado_a}\n"
                          f"M por: {self.seguimiento_por}\n"
-                         f"http://127.0.0.1:8000/api/items/{self.id}/")
+                         f"R: {self.cont_R}    C:{self.cont_C}\n"
+                         f"asignado: {self.asignado_a}\n"
+                         f"M por: {self.seguimiento_por}\n"
+                         f"R: {self.cont_R}    C:{self.cont_C}\n"
+                         f"asignado: {self.asignado_a}\n"
+                         f"M por: {self.seguimiento_por}\n"
+                         f"R: {self.cont_R}    C:{self.cont_C}\n"
+                         f"asignado: {self.asignado_a}\n"
+                         f"M por: {self.seguimiento_por}\n"
+                         f"R: {self.cont_R}    C:{self.cont_C}\n"
+                         f"asignado: {self.asignado_a}\n"
+                         f"M por: {self.seguimiento_por}\n"
+                         f"https://crud-qr.onrender.com/view/api/items/{self.id}/")
         
         qr_image = qr.convert('RGB')
 

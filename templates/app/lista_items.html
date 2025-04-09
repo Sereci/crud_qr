@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Ítems</title>
+</head>
+<body>
+    <h1>Lista de Ítems</h1>
+    <table border="1">
+        <tr>
+            <th>Ticket ID</th>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Asignado a</th>
+            <th>Seguimiento por</th>
+            <th>QR</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.ticket_id }}</td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.estado }}</td>
+            <td>{{ item.asignado_a }}</td>
+            <td>{{ item.seguimiento_por }}</td>
+            <td>
+                {% if item.codigo_qr %}
+                    <img src="{{ item.codigo_qr.url }}" width="100">
+                {% else %}
+                    No QR
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'generar_pdf_item' item.id %}" class="btn btn-primary">Descargar PDF</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

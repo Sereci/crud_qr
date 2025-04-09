@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del Item</title>
+</head>
+<body>
+    <h1>Detalle del Item</h1>
+    <p><strong>ID:</strong> {{ item.id }}</p>
+    <p><strong>Nombre:</strong> {{ item.nombre }}</p>
+    <p><strong>Descripción:</strong> {{ item.description }}</p>
+
+    {% if item.codigo_qr %}
+        <p><strong>Código QR:</strong><br>
+        <img src="{{ item.codigo_qr.url }}" width="200"></p>
+    {% else %}
+        <p>No hay código QR disponible.</p>
+    {% endif %}
+</body>
+</html>

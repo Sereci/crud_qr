@@ -1,10 +1,11 @@
 import os
+from pathlib import Path
 # BASE_DIR: Ruta base del proyecto
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Acceso al qr
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Clave secreta para Django
 SECRET_KEY = 'f3c8e7766e9b4d2fae9e7389a2b217cd'

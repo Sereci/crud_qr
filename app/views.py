@@ -27,8 +27,18 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 import json
 #from .models import Item
-
-
+import os
+from django.contrib.auth.decorators import user_passes_test
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A5
+from reportlab.lib.units import mm
+from reportlab.lib.units import cm
+from django.conf import settings
+from .models import Item
+from django.http import FileResponse, Http404
+from reportlab.lib.pagesizes import letter
+#
 def custom_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -258,4 +268,54 @@ class ComplementoViewSet(viewsets.ModelViewSet):
         """Solo soporte puede agregar complementos"""
         if self.request.user.role != 'soporte':
             raise PermissionDenied("Solo los usuarios de soporte pueden agregar complementos")
-        serializer.save()    
+        serializer.save()   
+ # listar todos los items        
+def lista_items(request):
+    items = Item.objects.all().order_by('-fecha_creacion')
+    return render(request, 'app/lista_items.html', {'items': items})
+
+#generar pdf
+@user_passes_test(lambda u: u.is_staff)#solo usuarios staff
+def generar_pdf_item_qr(request, item_id):
+    try:
+        item = Item.objects.get(id=item_id)
+    except Item.DoesNotExist:
+        raise Http404("Item no encontrado")
+
+    # Ruta absoluta del archivo QR
+    qr_filename = item.codigo_qr.name  # campo tipo ImageField
+    print(qr_filename) # imprimir el nombre del
+    qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
+
+    # Crear PDF en memoria configurar el tamaño 
+    from io import BytesIO
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A5)
+    p.setFont("Helvetica-Bold", 13)
+    #Dibuja texto
+    #texto arriba
+    p.drawString(40, 430, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")
+    p.drawString(40, 410, f"A: {item.asignado_a}")
+     #texto medio
+    p.drawString(40, 250, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")
+    p.drawString(40, 230, f"A: {item.asignado_a}")
+     #texto abajo
+    p.drawString(40, 70, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")
+    p.drawString(40, 50, f"A: {item.asignado_a}")
+    if os.path.exists(qr_path):
+        #Dibuja codigo
+        p.drawImage(qr_path, 40, 440, width=130, height=130)
+        p.drawImage(qr_path, 40, 260, width=130, height=130)
+        p.drawImage(qr_path, 40, 80, width=130, height=130)
+    else:
+        p.drawString(100, 700, "QR no encontrado.")
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f'item_{item.id}_qr.pdf')
+
+def item_detail_html(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    return render(request, 'app/item_detail.html', {'item': item})
