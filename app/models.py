@@ -77,23 +77,7 @@ class Item(models.Model):
     
     def generate_qr_code(self):
         """Genera un código QR basado en el ticket_id."""
-        qr = qrcode.make(f"Estacion: {self.ticket_id}\n"
-                         f"R: {self.cont_R}    C:{self.cont_C}\n"
-                         f"asignado: {self.asignado_a}\n"
-                         f"M por: {self.seguimiento_por}\n"
-                         f"R: {self.cont_R}    C:{self.cont_C}\n"
-                         f"asignado: {self.asignado_a}\n"
-                         f"M por: {self.seguimiento_por}\n"
-                         f"R: {self.cont_R}    C:{self.cont_C}\n"
-                         f"asignado: {self.asignado_a}\n"
-                         f"M por: {self.seguimiento_por}\n"
-                         f"R: {self.cont_R}    C:{self.cont_C}\n"
-                         f"asignado: {self.asignado_a}\n"
-                         f"M por: {self.seguimiento_por}\n"
-                         f"R: {self.cont_R}    C:{self.cont_C}\n"
-                         f"asignado: {self.asignado_a}\n"
-                         f"M por: {self.seguimiento_por}\n"
-                         f"https://crud-qr.onrender.com/view/api/items/{self.id}/")
+        qr = qrcode.make(f"https://crud-qr.onrender.com/api/view/items/{self.id}/")
         
         qr_image = qr.convert('RGB')
 

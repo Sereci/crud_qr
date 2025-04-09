@@ -26,7 +26,8 @@ urlpatterns = [
     path('dashboard/', dashboard, name='dashboard'),
     path('dashboard/operador/', dashboard_operador, name='dashboard_operador'),
     path('dashboard/soporte/', dashboard_soporte, name='dashboard_soporte'),
-    path('dashboard/admin/', dashboard_admin, name='dashboard_admin'),
+    #path('dashboard/admin/', dashboard_admin, name='dashboard_admin'),
+    path('dashboard/admin/', views.lista_items, name='dashboard_admin'),
 
     path('login/', custom_login, name='login'),
     path('logout/', custom_logout, name='logout'),
@@ -39,7 +40,7 @@ urlpatterns = [
     path('api/actualizar_estado/', actualizar_estado_tarea, name='actualizar_estado_tarea'),
     
 
-    path('view/items/', views.lista_items, name='lista_items'),
+    #path('view/items/', views.lista_items, name='lista_items'),
     #path('generar-pdf/', views.generar_pdf_items_qr, name='generar_pdf'),
     path('generar-pdf-item/<int:item_id>/', views.generar_pdf_item_qr, name='generar_pdf_item'),
     path('view/items/<int:item_id>/', views.item_detail_html, name='item_detail_html'),

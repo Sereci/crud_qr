@@ -6,15 +6,29 @@
 </head>
 <body>
     <h1>Detalle del Item</h1>
-    <p><strong>ID:</strong> {{ item.id }}</p>
-    <p><strong>Nombre:</strong> {{ item.nombre }}</p>
-    <p><strong>Descripción:</strong> {{ item.description }}</p>
+    <p><strong>Estación:</strong> {{ item.ticket_id }}</p>
+    <p><strong>Cont R:</strong>{{ item.cont_R }}</p>
+    <p><strong>Cont C:</strong>{{ item.cont_C }}</p>
+    <br>
+    <p><strong>Etiqueta:</strong> {{ item.nombre }}</p>
 
-    {% if item.codigo_qr %}
-        <p><strong>Código QR:</strong><br>
-        <img src="{{ item.codigo_qr.url }}" width="200"></p>
-    {% else %}
-        <p>No hay código QR disponible.</p>
-    {% endif %}
+    <p><strong>Descripción:</strong> {{ item.description }}</p>
+    <br>
+    <p><strong>Estado:</strong>{{ item.estado }}</p> control de llaves
+    <p><strong>Asignado a:</strong>{{ item.asignado_a }}</p>
+    <br>
+    <p><strong>Coordinador:</strong>{{ item.seguimiento_por }}</p> 
+    <p><strong>Estado Operativo</strong></p><!-- Desplegado, Replegado, Trabajando-->
+    <p><strong>Soporte Técnico:</strong>{{ item.soporte }}</p>
+    <br>
+    <p><strong>Ubicación:</strong>R1</p><!--Ubicación: Ruta1 - Rural , UbicaciónTerm. Metropolitana-Urbano-->
+    <p><strong>Tipo:</strong>Rural</p>
+    <br>
+    <br>
+    <label><p><strong>Comunicados</strong></p></label>
+    <textarea name="" id=""></textarea>
+
+    <textarea name=""  id="" readonly >####### HISTORIAL DE CAMBIOS #######</textarea>  
+
 </body>
 </html>
