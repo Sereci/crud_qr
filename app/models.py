@@ -27,6 +27,7 @@ class User(AbstractUser):
     ROLE_CHOICES = [
         ('admin', 'Admin'),
         ('soporte', 'Soporte'),
+        ('coordi', 'Coordinador'),
         ('operador', 'Operador'),
     ]
     #role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='operador')

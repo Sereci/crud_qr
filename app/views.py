@@ -291,25 +291,47 @@ def generar_pdf_item_qr(request, item_id):
     from io import BytesIO
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=A5)
-    p.setFont("Helvetica-Bold", 13)
+    p.setFont("Helvetica-Bold", 30)
     #Dibuja texto
     #texto arriba
-    p.drawString(40, 430, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")
-    p.drawString(40, 410, f"A: {item.asignado_a}")
+    #p.drawString(40, 430, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")
+    #p.drawString(40, 410, f"A: {item.asignado_a}")
      #texto medio
-    p.drawString(40, 250, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")
-    p.drawString(40, 230, f"A: {item.asignado_a}")
+    #p.drawString(40, 250, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")
+    #p.drawString(40, 230, f"A: {item.asignado_a}")
      #texto abajo
-    p.drawString(40, 70, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")
-    p.drawString(40, 50, f"A: {item.asignado_a}")
+    #p.drawString(40, 70, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")
+    #p.drawString(40, 50, f"A: {item.asignado_a}")
+    #if os.path.exists(qr_path):
     if os.path.exists(qr_path):
         #Dibuja codigo
-        p.drawImage(qr_path, 40, 440, width=130, height=130)
-        p.drawImage(qr_path, 40, 260, width=130, height=130)
-        p.drawImage(qr_path, 40, 80, width=130, height=130)
+        p.drawImage(qr_path, 40, 462, width=120, height=120)
+        p.drawImage(qr_path, 40, 282, width=120, height=120)
+        p.drawImage(qr_path, 40, 92, width=120, height=120)
     else:
         p.drawString(100, 700, "QR no encontrado.")
 
+
+
+
+    #texto arriba
+    p.drawString(40, 442, f"{item.ticket_id}")
+    
+     #texto medio
+    p.drawString(40, 262, f"{item.ticket_id}")
+   
+     #texto abajo
+    p.drawString(40, 70, f"{item.ticket_id}")
+
+    p.setFont("Helvetica-Bold", 11)
+    p.drawString(100, 442, f"       R: {item.cont_R} C:{item.cont_C}")
+    p.drawString(40, 426, f"A: {item.asignado_a}")
+
+    p.drawString(100, 262, f"       R: {item.cont_R}   C:{item.cont_C}")
+    p.drawString(40, 242, f"A: {item.asignado_a}")
+    p.drawString(100, 70, f"        R: {item.cont_R}   C:{item.cont_C}")
+    p.drawString(40, 52, f"A: {item.asignado_a}")
+    
     p.showPage()
     p.save()
 
