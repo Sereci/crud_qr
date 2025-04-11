@@ -90,8 +90,8 @@ class Oficina(models.Model):
 class HistoricoMovimiento(models.Model):
     fecha_de_llegada = models.DateField()
     responsable = models.ForeignKey(User, related_name='coordinador_tickets',
-                                    on_delete=models.SET_NULL, null=True, blank=True,
-                                    limit_choices_to={'role': 'coordinador'})
+                                    on_delete=models.SET_NULL, null=True,
+                                    limit_choices_to={'role': 'coordi'})
     item = models.ForeignKey(Item, related_name='historicos',
                              on_delete=models.SET_NULL, null=True, blank=True)
     oficina = models.ForeignKey(Oficina, related_name='oficina_tickets',
@@ -109,11 +109,11 @@ class Activo(models.Model):
     item = models.ForeignKey(Item, related_name='activos',
                              on_delete=models.SET_NULL, null=True, blank=True)
     tipo_de_equipo = models.CharField(max_length=10, choices=TIPO_EQUIPO_CHOICES)
-    maleta = models.CharField(max_length=50)
-    laptop_y_cargador = models.CharField(max_length=50)
-    monitor_cable_vga_y_poder = models.CharField(max_length=50)
+    maleta = models.CharField(max_length=50, blank=True)
+    laptop_y_cargador = models.CharField(max_length=50, blank=True)
+    monitor_cable_vga_y_poder = models.CharField(max_length=50,blank=True)
     teclado_mouse = models.BooleanField(default=False)
-    cpu_y_cable_de_poder = models.CharField(max_length=50)
+    cpu_y_cable_de_poder = models.CharField(max_length=50,blank=True)
     decadactilar = models.CharField(max_length=50)
     escaner_y_usb = models.CharField(max_length=50)
     hub = models.CharField(max_length=50)
@@ -124,66 +124,48 @@ class Activo(models.Model):
     tripode = models.BooleanField(default=False)
     cable_de_extension = models.BooleanField(default=False)
     adaptador_3_a_1 = models.BooleanField(default=False)
-    observacion = models.TextField()
+    observacion = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.tipo_de_equipo} - Maleta: {self.maleta}"
 
     
     
-    def generate_qr_code(self):
-        """Genera un código QR basado en el ticket_id."""
-        qr = qrcode.make(f"https://crud-qr.onrender.com/api/view/items/{self.id}/")
-        
-        qr_image = qr.convert('RGB')
+def generate_qr_code(self):
+    """Genera un código QR basado en el ticket_id del Item asociado."""
+    if not self.item:
+        return  # Evita errores si no hay item asignado
 
-        # Crear una imagen de fondo donde se agregará el QR y el texto
-        width, height = qr_image.size
-        image = Image.new('RGB', (width, height + 50), color=(255, 255, 255))  # Agregar espacio para el texto
+    qr = qrcode.make(f"https://crud-qr.onrender.com/api/view/items/{self.item.id}/")
+    qr_image = qr.convert('RGB')
 
-        # Pegar el QR en la imagen nueva
-        image.paste(qr_image, (0, 0))
+    # Crear una imagen de fondo donde se agregará el QR y el texto
+    width, height = qr_image.size
+    image = Image.new('RGB', (width, height + 50), color=(255, 255, 255))
+    image.paste(qr_image, (0, 0))
 
-        # Crear un objeto de dibujo para agregar texto
-        draw = ImageDraw.Draw(image)
+    draw = ImageDraw.Draw(image)
 
-        # Usar una fuente predeterminada o una fuente personalizada
-        try:
-            font = ImageFont.truetype("arial.ttf", 22)  # Cambiar a una fuente más grande o personalizada
-        except IOError:
-            font = ImageFont.load_default()  # Fuente predeterminada si no se encuentra la fuente
+    try:
+        font = ImageFont.truetype("arial.ttf", 22)
+    except IOError:
+        font = ImageFont.load_default()
 
-        # Definir el texto a agregar
-        text = f"Estacion: {self.ticket_id} R: {self.cont_R} C:{self.cont_C}\n Asignado a: {self.asignado_a}"
+    text = f"Estacion: {self.item.ticket_id} R: {self.item.cont_R} C:{self.item.cont_C}\nAsignado a: {self.item.asignado_a}"
 
-        # Obtener el tamaño del texto utilizando textbbox
-        text_bbox = draw.textbbox((0, 0), text, font=font)
-        text_width = text_bbox[2] - text_bbox[0]  # Ancho del texto
-        text_height = text_bbox[3] - text_bbox[1]  # Altura del texto
+    text_bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = text_bbox[2] - text_bbox[0]
+    text_position = ((width - text_width) // 2, height - 5)
+    draw.text(text_position, text, fill=(0, 0, 0), font=font)
 
-        # Definir la posición del texto (centrado horizontalmente debajo del QR)
-        text_position = ((width - text_width) // 2, height - 5)  # Centrar horizontalmente y ponerlo debajo del QR
+    qr_path = f"qrcodes/{self.item.ticket_id}.png"
+    image.save(qr_path)
 
-        # Agregar el texto
-        draw.text(text_position, text, fill=(0, 0, 0), font=font)
+    print(f"Código QR generado: {os.path.abspath(qr_path)}")
 
-        #qr_path = f"qrcodes/{self.ticket_id}_qr.png"  # Ruta donde debería guardarse
-        #qr.save(qr_path)  # Guardar localmente
-        qr_path = f"qrcodes/{self.ticket_id}.png"
-        image.save(qr_path)  # Guardar la imagen localmente
-
-        print(f"Código QR generado: {os.path.abspath(qr_path)}") 
-
-        buffer = BytesIO()
-        qr.save(buffer, format="PNG")
-        self.codigo_qr.save(f"qr_{self.ticket_id}.png", ContentFile(buffer.getvalue()), save=False)
-        #super().save(update_fields=['qr_code'])
-       
-    def save(self, *args, **kwargs):
-        self.generate_qr_code()  # Generar QR antes de guardar
-        super().save(*args, **kwargs)
-    def __str__(self):
-        return self.ticket_id      
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    self.codigo_qr.save(f"qr_{self.item.ticket_id}.png", ContentFile(buffer.getvalue()), save=False)
 
 
 class Complemento(models.Model):

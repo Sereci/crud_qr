@@ -75,7 +75,7 @@ class OficinaAdmin(admin.ModelAdmin):
 
 @admin.register(HistoricoMovimiento)
 class HistoricoMovimientosAdmin(admin.ModelAdmin):
-    list_display = ('fecha_de_llegada', 'responsable', 'item','oficina')
+    list_display = ('fecha_de_llegada', 'responsable','oficina')
     search_fields = ('responsable__username', 'item__ticket_id')  # Asegúrate de que Item tenga 'nombre'
 
 
