@@ -63,19 +63,19 @@ TEMPLATES = [
 # Configuración de base de datos (ajustar según sea necesario)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'railway_backup',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-
         #'ENGINE': 'django.db.backends.mysql',
-        #'NAME': 'railway',
+        #'NAME': 'railway_backup',
         #'USER': 'root',
-        #'PASSWORD': 'ZXrMXGcfgozFYbQNDroXRhhSmgLpZqYz',
-        #'HOST': 'switchback.proxy.rlwy.net',
-        #'PORT': '59091'
+        #'PASSWORD': '',
+        #'HOST': 'localhost',
+        #'PORT': '3306',
+
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'railway',
+        'USER': 'root',
+        'PASSWORD': 'ZXrMXGcfgozFYbQNDroXRhhSmgLpZqYz',
+        'HOST': 'switchback.proxy.rlwy.net',
+        'PORT': '59091'
     }
 }
 
