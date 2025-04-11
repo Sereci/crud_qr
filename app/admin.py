@@ -3,10 +3,10 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth import get_user_model
 from django import forms
 from django.utils.html import mark_safe
-#from .models import User, Item
-from .models import Item
+from .models import Item, Oficina, HistoricoMovimiento, Activo
 
 User = get_user_model()
+
 
 class UserAdminForm(forms.ModelForm):
     class Meta:
@@ -16,16 +16,17 @@ class UserAdminForm(forms.ModelForm):
     def clean_role(self):
         """Valida que el rol ingresado sea válido"""
         role = self.cleaned_data.get('role')
-        if role not in ['admin', 'soporte', 'operador']:
+        if role not in ['admin', 'soporte', 'operador','coordi']:
             raise forms.ValidationError("Rol inválido")
         return role
 
     def clean_password(self):
         """Asegura que la contraseña ingresada en el formulario no esté en texto plano"""
         password = self.cleaned_data.get("password")
-        if not password:  # Si el campo está vacío, mantiene la contraseña actual
+        if not password:
             return self.instance.password
         return password
+
 
 class CustomUserAdmin(UserAdmin):
     form = UserAdminForm
@@ -37,17 +38,15 @@ class CustomUserAdmin(UserAdmin):
         ('Información Adicional', {'fields': ('role',)}),
     )
 
- 
     def save_model(self, request, obj, form, change):
-        """Mantiene la contraseña anterior si no se proporciona una nueva"""
         if change and 'password' in form.cleaned_data:
             password = form.cleaned_data.get("password")
             if password and not password.startswith('pbkdf2_sha256$'):
-                obj.set_password(password)  # Encripta la nueva contraseña
+                obj.set_password(password)
             else:
-                obj.password = User.objects.get(pk=obj.pk).password  # Mantiene la contraseña anterior
-        
+                obj.password = User.objects.get(pk=obj.pk).password
         obj.save()
+
 
 admin.site.register(User, CustomUserAdmin)
 
@@ -65,3 +64,22 @@ class ItemAdmin(admin.ModelAdmin):
     mostrar_qr.short_description = "Código QR"    
 
 admin.site.register(Item, ItemAdmin)
+
+
+# Nuevos modelos
+@admin.register(Oficina)
+class OficinaAdmin(admin.ModelAdmin):
+    list_display = ('codigo', 'nombre_de_la_oficina', 'ubicacion', 'georefenciacido')
+    search_fields = ('codigo', 'nombre_de_la_oficina')
+
+
+@admin.register(HistoricoMovimiento)
+class HistoricoMovimientosAdmin(admin.ModelAdmin):
+    list_display = ('fecha_de_llegada', 'responsable', 'item','oficina')
+    search_fields = ('responsable__username', 'item__ticket_id')  # Asegúrate de que Item tenga 'nombre'
+
+
+@admin.register(Activo)
+class ActivosAdmin(admin.ModelAdmin):
+    list_display = ('tipo_de_equipo', 'item','maleta', 'laptop_y_cargador', 'monitor_cable_vga_y_poder', 'teclado_mouse', 'impresora')
+    list_filter = ('tipo_de_equipo', 'banner', 'tripode', 'cable_de_extension')

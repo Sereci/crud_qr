@@ -73,7 +73,62 @@ class Item(models.Model):
     #fecha_creacion = models.DateTimeField(auto_now_add=True)
     codigo_qr = models.ImageField(upload_to='qrcodes/', blank=True, null=True)
 
- 
+    def __str__(self):
+        return self.ticket_id
+
+ # Añadir clases oficina , historicoMovimiento, activo
+class Oficina(models.Model):
+    codigo = models.CharField(max_length=16, unique=True)
+    nombre_de_la_oficina = models.CharField(max_length=250)
+    ubicacion = models.CharField(max_length=250)
+    georefenciacido = models.CharField(null=True,max_length=250,  blank=True)
+
+    def __str__(self):
+        return self.nombre_de_la_oficina
+
+
+class HistoricoMovimiento(models.Model):
+    fecha_de_llegada = models.DateField()
+    responsable = models.ForeignKey(User, related_name='coordinador_tickets',
+                                    on_delete=models.SET_NULL, null=True, blank=True,
+                                    limit_choices_to={'role': 'coordinador'})
+    item = models.ForeignKey(Item, related_name='historicos',
+                             on_delete=models.SET_NULL, null=True, blank=True)
+    oficina = models.ForeignKey(Oficina, related_name='oficina_tickets',
+                                on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.item} - {self.fecha_de_llegada}"
+
+
+class Activo(models.Model):
+    TIPO_EQUIPO_CHOICES = [
+        ('fijo', 'Fijo'),
+        ('movil', 'Movil'),
+    ]
+    item = models.ForeignKey(Item, related_name='activos',
+                             on_delete=models.SET_NULL, null=True, blank=True)
+    tipo_de_equipo = models.CharField(max_length=10, choices=TIPO_EQUIPO_CHOICES)
+    maleta = models.CharField(max_length=50)
+    laptop_y_cargador = models.CharField(max_length=50)
+    monitor_cable_vga_y_poder = models.CharField(max_length=50)
+    teclado_mouse = models.BooleanField(default=False)
+    cpu_y_cable_de_poder = models.CharField(max_length=50)
+    decadactilar = models.CharField(max_length=50)
+    escaner_y_usb = models.CharField(max_length=50)
+    hub = models.CharField(max_length=50)
+    estabilizador = models.CharField(max_length=50)
+    camara_cargador_y_usb = models.CharField(max_length=50)
+    impresora = models.CharField(max_length=50)
+    banner = models.BooleanField(default=False)
+    tripode = models.BooleanField(default=False)
+    cable_de_extension = models.BooleanField(default=False)
+    adaptador_3_a_1 = models.BooleanField(default=False)
+    observacion = models.TextField()
+
+    def __str__(self):
+        return f"{self.tipo_de_equipo} - Maleta: {self.maleta}"
+
     
     
     def generate_qr_code(self):

@@ -329,6 +329,7 @@ def generar_pdf_item_qr(request, item_id):
 
     p.drawString(100, 262, f"       R: {item.cont_R}   C:{item.cont_C}")
     p.drawString(40, 242, f"A: {item.asignado_a}")
+
     p.drawString(100, 70, f"        R: {item.cont_R}   C:{item.cont_C}")
     p.drawString(40, 52, f"A: {item.asignado_a}")
     
