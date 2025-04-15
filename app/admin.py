@@ -4,9 +4,34 @@ from django.contrib.auth import get_user_model
 from django import forms
 from django.utils.html import mark_safe
 from .models import Item, Oficina, HistoricoMovimiento, Activo
+import openpyxl
+from django.http import HttpResponse
 
 User = get_user_model()
+def export_as_excel(modeladmin, request, queryset):
+    from openpyxl import Workbook
 
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Datos Exportados"
+
+    # Obtener nombres de los campos del modelo
+    field_names = [field.name for field in modeladmin.model._meta.fields]
+    ws.append(field_names)
+
+    # Agregar filas con datos del queryset
+    for obj in queryset:
+        row = [getattr(obj, field) for field in field_names]
+        ws.append(row)
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename=exportado.xlsx'
+    wb.save(response)
+    return response
+
+export_as_excel.short_description = "Exportar seleccionados a Excel"
 
 class UserAdminForm(forms.ModelForm):
     class Meta:
@@ -26,7 +51,6 @@ class UserAdminForm(forms.ModelForm):
         if not password:
             return self.instance.password
         return password
-
 
 class CustomUserAdmin(UserAdmin):
     form = UserAdminForm
@@ -55,6 +79,7 @@ class ItemAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'ticket_id', 'cont_R', 'cont_C', 'estado', 'asignado_a', 'seguimiento_por', 'fecha_creacion')
     list_filter = ('estado', 'asignado_a', 'seguimiento_por')
     search_fields = ('nombre',)
+    actions = [export_as_excel]
 
     def mostrar_qr(self, obj):
         if obj.codigo_qr:

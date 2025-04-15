@@ -46,35 +46,61 @@ class Item(models.Model):
     ESTADO_CHOICES = [
         ('inicial', 'masterizado'),
         ('desplegado', 'desplegado'),
-         ('pendiente', 'Pendiente'),
-         ('en_progreso', 'En Progreso'),
+        ('pendiente', 'Pendiente'),
+        ('en_progreso', 'En Progreso'),
         ('completado', 'Completado'),
         ('backup', 'backup'),
         ('transmitido', 'transmitido'),
     ]
-    #fecha_actualizacion = models.DateTimeField(default=timezone.now)
     nombre = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     cont_R = models.CharField(max_length=50, blank=True, null=True)
     cont_C = models.CharField(max_length=50, blank=True, null=True)
-    #estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='inicial')
     estado = models.CharField(
         max_length=20,
-        choices=[('inicial', 'masterizado'), ('pendiente', 'Pendiente'), ('en_progreso', 'En Progreso'), ('completado', 'Completado'), ('backup', 'backup'), ('transmitido', 'transmitido') , ],
+        choices=ESTADO_CHOICES,
         default='inicial'
     )
     soporte = models.ForeignKey(User, related_name='soporte_items', on_delete=models.SET_NULL, null=True, blank=True)
-    #asignado_a = models.ForeignKey(User, related_name='operador_items', on_delete=models.SET_NULL, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     ticket_id = models.CharField(max_length=20, unique=True, blank=True)
-
     asignado_a = models.ForeignKey(User, related_name='operador_tickets', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'operador'})
     seguimiento_por = models.ForeignKey(User, related_name='soporte_tickets', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'soporte'})
-    #fecha_creacion = models.DateTimeField(auto_now_add=True)
     codigo_qr = models.ImageField(upload_to='qrcodes/', blank=True, null=True)
 
     def __str__(self):
         return self.ticket_id
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.generate_qr_code()
+        super().save(update_fields=["codigo_qr"])
+
+    def generate_qr_code(self):
+        qr = qrcode.make(f"https://crud-qr.onrender.com/api/view/items/{self.id}/")
+        qr_image = qr.convert('RGB')
+
+        width, height = qr_image.size
+        image = Image.new('RGB', (width, height + 50), color=(255, 255, 255))
+        image.paste(qr_image, (0, 0))
+
+        draw = ImageDraw.Draw(image)
+
+        try:
+            font = ImageFont.truetype("arial.ttf", 22)
+        except IOError:
+            font = ImageFont.load_default()
+
+        text = f""
+        text_bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = text_bbox[2] - text_bbox[0]
+        text_position = ((width - text_width) // 2, height - 5)
+        draw.text(text_position, text, fill=(0, 0, 0), font=font)
+
+        buffer = BytesIO()
+        image.save(buffer, format="PNG")
+        filename = f"qr_{self.ticket_id}.png"
+        self.codigo_qr.save(filename, ContentFile(buffer.getvalue()), save=False)
 
  # Añadir clases oficina , historicoMovimiento, activo
 class Oficina(models.Model):
@@ -151,7 +177,7 @@ def generate_qr_code(self):
     except IOError:
         font = ImageFont.load_default()
 
-    text = f"Estacion: {self.item.ticket_id} R: {self.item.cont_R} C:{self.item.cont_C}\nAsignado a: {self.item.asignado_a}"
+    #text = f"Estacion: {self.item.ticket_id} R: {self.item.cont_R} C:{self.item.cont_C}\nAsignado a: {self.item.asignado_a}"
 
     text_bbox = draw.textbbox((0, 0), text, font=font)
     text_width = text_bbox[2] - text_bbox[0]

@@ -323,15 +323,20 @@ def generar_pdf_item_qr(request, item_id):
      #texto abajo
     p.drawString(40, 70, f"{item.ticket_id}")
 
+    asignado_a = item.asignado_a if item.asignado_a else "..................."
+
     p.setFont("Helvetica-Bold", 11)
-    p.drawString(100, 442, f"       R: {item.cont_R} C:{item.cont_C}")
-    p.drawString(40, 426, f"A: {item.asignado_a}")
+    p.drawString(100, 442, f"     R: {item.cont_R} C:{item.cont_C}")
+    p.drawString(40, 426, f"A: {asignado_a}")
+    p.drawString(40, 410, f"Equipo: {item.nombre}")
 
-    p.drawString(100, 262, f"       R: {item.cont_R}   C:{item.cont_C}")
-    p.drawString(40, 242, f"A: {item.asignado_a}")
+    p.drawString(100, 262, f"     R: {item.cont_R}   C:{item.cont_C}")
+    p.drawString(40, 242, f"A: {asignado_a}")
+    p.drawString(40, 226, f"Equipo: {item.nombre}")
 
-    p.drawString(100, 70, f"        R: {item.cont_R}   C:{item.cont_C}")
-    p.drawString(40, 52, f"A: {item.asignado_a}")
+    p.drawString(100, 70, f"      R: {item.cont_R}   C:{item.cont_C}")
+    p.drawString(40, 52, f"A: {asignado_a}")
+    p.drawString(40, 36, f"Equipo: {item.nombre}")
     
     p.showPage()
     p.save()
