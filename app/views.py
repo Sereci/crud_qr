@@ -291,7 +291,7 @@ def generar_pdf_item_qr(request, item_id):
     from io import BytesIO
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=A5)
-    p.setFont("Helvetica-Bold", 30)
+    p.setFont("Helvetica-Bold", 25)
     #Dibuja texto
     #texto arriba
     #p.drawString(40, 430, f"Est: {item.ticket_id}   R: {item.cont_R}   C:{item.cont_C}")

@@ -10,18 +10,36 @@ from django.http import HttpResponse
 User = get_user_model()
 def export_as_excel(modeladmin, request, queryset):
     from openpyxl import Workbook
+    from django.http import HttpResponse
+    from django.db.models import ImageField
+    import datetime
 
     wb = Workbook()
     ws = wb.active
     ws.title = "Datos Exportados"
 
-    # Obtener nombres de los campos del modelo
-    field_names = [field.name for field in modeladmin.model._meta.fields]
+    # Excluir campos tipo ImageField
+    fields = [
+        field for field in modeladmin.model._meta.fields
+        if not isinstance(field, ImageField)
+    ]
+    field_names = [field.name for field in fields]
     ws.append(field_names)
 
-    # Agregar filas con datos del queryset
     for obj in queryset:
-        row = [getattr(obj, field) for field in field_names]
+        row = []
+        for field in field_names:
+            value = getattr(obj, field)
+
+            # Si es datetime con tzinfo, eliminar tz
+            if isinstance(value, datetime.datetime) and value.tzinfo is not None:
+                value = value.replace(tzinfo=None)
+
+            # Para claves foráneas, mostrar algo legible
+            if hasattr(value, '__str__'):
+                value = str(value)
+
+            row.append(value)
         ws.append(row)
 
     response = HttpResponse(
@@ -32,6 +50,7 @@ def export_as_excel(modeladmin, request, queryset):
     return response
 
 export_as_excel.short_description = "Exportar seleccionados a Excel"
+
 
 class UserAdminForm(forms.ModelForm):
     class Meta:
