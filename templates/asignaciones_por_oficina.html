@@ -1,0 +1,32 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+<h1>Asignaciones por Oficina</h1>
+
+{% for oficina in oficinas %}
+    <h2>📍 {{ oficina.nombre_de_la_oficina }}</h2>
+    <ul>
+        {% for item in oficina.oficina_tickets.all %}
+            <li>📦 {{ item.ticket_id }} - Usuario: {{ item.asignado_a|default:"No asignado" }}</li>
+        {% empty %}
+            <li>Sin ítems asignados.</li>
+        {% endfor %}
+    </ul>
+{% endfor %}
+{% endblock %}
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+<h1>Asignaciones por Oficina</h1>
+
+{% for oficina in oficinas %}
+    <h2>📍 {{ oficina.nombre_de_la_oficina }}</h2>
+    <ul>
+        {% for item in oficina.oficina_tickets.all %}
+            <li>📦 {{ item.ticket_id }} - Usuario: {{ item.asignado_a|default:"No asignado" }}</li>
+        {% empty %}
+            <li>Sin ítems asignados.</li>
+        {% endfor %}
+    </ul>
+{% endfor %}
+{% endblock %}

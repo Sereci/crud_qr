@@ -1,0 +1,14 @@
+{% extends "admin/change_list.html" %}
+{% block content %}
+  {{ block.super }}
+  <h2>Rutas por oficina</h2>
+  <ul>
+    {% for oficina in cl.queryset %}
+      <li>
+        <a href="{% url 'admin:ver_rutas' oficina.id %}">
+          {{ oficina.nombre_de_la_oficina }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
