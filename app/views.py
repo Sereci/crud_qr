@@ -38,6 +38,9 @@ from django.conf import settings
 from .models import Item
 from django.http import FileResponse, Http404
 from reportlab.lib.pagesizes import letter
+
+from django.shortcuts import render
+from .models import Oficina, Item
 #
 def custom_login(request):
     if request.method == 'POST':

@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.urls import path, include
 from app import views
 
-
 urlpatterns = [
     # Acceso al panel de administración
     path('admin/', admin.site.urls),

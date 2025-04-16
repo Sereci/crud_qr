@@ -11,37 +11,47 @@ User = get_user_model()
 def export_as_excel(modeladmin, request, queryset):
     from openpyxl import Workbook
     from django.http import HttpResponse
-    from django.db.models import ImageField
     import datetime
 
     wb = Workbook()
     ws = wb.active
     ws.title = "Datos Exportados"
 
-    # Excluir campos tipo ImageField
-    fields = [
-        field for field in modeladmin.model._meta.fields
-        if not isinstance(field, ImageField)
+    # Campos específicos a exportar
+    export_fields = [
+        'nombre',
+        'ticket_id',
+        'cont_C',
+        'cont_R',
+        'soporte',
+        'asignado_a',
+        'seguimiento_por'
     ]
-    field_names = [field.name for field in fields]
-    ws.append(field_names)
 
-    for obj in queryset:
-        row = []
-        for field in field_names:
+    # Agregar encabezados con contador
+    ws.append(['N°'] + export_fields)
+
+    # Escribir datos
+    for idx, obj in enumerate(queryset, start=1):
+        row = [idx]  # Contador
+
+        for field in export_fields:
             value = getattr(obj, field)
 
-            # Si es datetime con tzinfo, eliminar tz
+            # Quitar zona horaria si es datetime
             if isinstance(value, datetime.datetime) and value.tzinfo is not None:
                 value = value.replace(tzinfo=None)
 
-            # Para claves foráneas, mostrar algo legible
-            if hasattr(value, '__str__'):
+            if value is None:
+                value = ""
+            elif hasattr(value, '__str__'):
                 value = str(value)
 
             row.append(value)
+
         ws.append(row)
 
+    # Preparar respuesta
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
@@ -50,6 +60,7 @@ def export_as_excel(modeladmin, request, queryset):
     return response
 
 export_as_excel.short_description = "Exportar seleccionados a Excel"
+
 
 
 class UserAdminForm(forms.ModelForm):
