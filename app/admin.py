@@ -6,6 +6,42 @@ from django.utils.html import mark_safe
 from .models import Item, Oficina, HistoricoMovimiento, Activo
 import openpyxl
 from django.http import HttpResponse
+from django.utils.html import format_html
+from django.urls import path
+from django.shortcuts import render, get_object_or_404
+from .models import Oficina, HistoricoMovimiento, Item
+
+
+class OficinaAdmin(admin.ModelAdmin):
+    list_display = ('nombre_de_la_oficina', 'ubicacion')
+    change_list_template = "admin/oficinas_changelist.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'rutas/<int:oficina_id>/',
+                self.admin_site.admin_view(self.ver_rutas),
+                name='ver_rutas',
+            ),
+        ]
+        return custom_urls + urls
+
+    def ver_rutas(self, request, oficina_id):
+        oficina = get_object_or_404(Oficina, pk=oficina_id)
+        historicos = HistoricoMovimiento.objects.filter(oficina=oficina).select_related('item')
+        
+        context = {
+            'oficina': oficina,
+            'historicos': historicos,
+            'title': f'Rutas de {oficina.nombre_de_la_oficina}',
+        }
+        return render(request, 'admin/ver_rutas.html', context)
+
+
+#admin.site.register(Oficina, OficinaAdmin)
+
+
 
 User = get_user_model()
 def export_as_excel(modeladmin, request, queryset):
@@ -126,6 +162,29 @@ admin.site.register(Item, ItemAdmin)
 class OficinaAdmin(admin.ModelAdmin):
     list_display = ('codigo', 'nombre_de_la_oficina', 'ubicacion', 'georefenciacido')
     search_fields = ('codigo', 'nombre_de_la_oficina')
+    change_list_template = "admin/oficinas_changelist.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'rutas/<int:oficina_id>/',
+                self.admin_site.admin_view(self.ver_rutas),
+                name='ver_rutas',
+            ),
+        ]
+        return custom_urls + urls
+
+    def ver_rutas(self, request, oficina_id):
+        oficina = get_object_or_404(Oficina, pk=oficina_id)
+        historicos = HistoricoMovimiento.objects.filter(oficina=oficina).select_related('item')
+        context = {
+            'oficina': oficina,
+            'historicos': historicos,
+            'title': f'Rutas de {oficina.nombre_de_la_oficina}',
+        }
+        return render(request, 'admin/ver_rutas.html', context)
+
 
 
 @admin.register(HistoricoMovimiento)
