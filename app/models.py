@@ -65,11 +65,12 @@ class Item(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     ticket_id = models.CharField(max_length=20, unique=True, blank=True)
     asignado_a = models.ForeignKey(User, related_name='operador_tickets', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'operador'})
-    seguimiento_por = models.ForeignKey(User, related_name='soporte_tickets', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'soporte'})
+    seguimiento_por = models.ForeignKey(User, related_name='coordi_tickets', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'coordi'})
     codigo_qr = models.ImageField(upload_to='qrcodes/', blank=True, null=True)
 
     def __str__(self):
-        return self.ticket_id
+        asignado = self.asignado_a.get_full_name() if self.asignado_a else "Sin asignar"
+        return f"{self.ticket_id} - {asignado}"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
