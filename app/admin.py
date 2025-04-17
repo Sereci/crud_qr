@@ -144,7 +144,7 @@ admin.site.register(User, CustomUserAdmin)
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'ticket_id', 'cont_R', 'cont_C', 'estado', 'asignado_a', 'seguimiento_por', 'fecha_creacion')
     list_filter = ('estado', 'asignado_a', 'seguimiento_por')
-    search_fields = ('nombre',)
+    search_fields = ('nombre','ticket_id')
     actions = [export_as_excel]
 
     def mostrar_qr(self, obj):
