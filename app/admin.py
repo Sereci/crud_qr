@@ -143,11 +143,14 @@ admin.site.register(User, CustomUserAdmin)
 
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'ticket_id', 'cont_R', 'cont_C', 'estado', 'asignado_a', 'seguimiento_por', 'fecha_creacion')
-    readonly_fields = ('ticket_id', 'cont_R', 'cont_C','nombre') 
     list_filter = ('estado', 'asignado_a', 'seguimiento_por')
     search_fields = ('nombre','ticket_id')
     actions = [export_as_excel]
        
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.role == 'soporte':
+            return ('ticket_id', 'cont_R', 'cont_C','estado','asignado_a','seguimiento_por')
+        return super().get_readonly_fields(request, obj)
 
     def mostrar_qr(self, obj):
         if obj.codigo_qr:
