@@ -70,12 +70,19 @@ DATABASES = {
         #'HOST': 'localhost',
         #'PORT': '3306',
 
+        #'ENGINE': 'django.db.backends.mysql',
+        #'NAME': 'railway',
+        #'USER': 'root',
+        #'PASSWORD': 'ZXrMXGcfgozFYbQNDroXRhhSmgLpZqYz',
+        #'HOST': 'switchback.proxy.rlwy.net',
+        #'PORT': '59091'
+
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'railway',
-        'USER': 'root',
-        'PASSWORD': 'ZXrMXGcfgozFYbQNDroXRhhSmgLpZqYz',
-        'HOST': 'switchback.proxy.rlwy.net',
-        'PORT': '59091'
+        'USER': 'sereci',
+        'PASSWORD': 'S3r3c1',
+        'HOST': '34.176.143.16',
+        'PORT': '3306'
     }
 }
 
