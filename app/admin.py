@@ -10,7 +10,7 @@ from django.utils.html import format_html
 from django.urls import path
 from django.shortcuts import render, get_object_or_404
 from .models import Oficina, HistoricoMovimiento, Item
-
+from django.utils import timezone
 
 class OficinaAdmin(admin.ModelAdmin):
     list_display = ('nombre_de_la_oficina', 'ubicacion')
@@ -140,13 +140,50 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(User, CustomUserAdmin)
 
+class ItemAdminForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = '__all__'
+
+    def clean_description(self):
+        nueva = self.cleaned_data.get("description", "")
+        anterior = self.instance.description or ""
+
+        # Si no hay cambio, se deja igual
+        if nueva == anterior:
+            return nueva
+
+        # Si se borró parte del contenido anterior, lanzar error
+        if not nueva.startswith(anterior):
+            raise forms.ValidationError("No se puede borrar texto anterior en la descripción.")
+
+        # Obtener usuario y timestamp
+        user = self.current_user if hasattr(self, 'current_user') else None
+        username = user.username if user else 'desconocido'
+        timestamp = timezone.now().strftime("%d/%m/%Y %H:%M:%S")
+
+        # Añadir marca al final
+        marca = f"\n{timestamp} {username}\n" + "-" * 46 + "\n"
+        return nueva + marca
+
+    def __init__(self, *args, **kwargs):
+        self.current_user = kwargs.pop('current_user', None)
+        super().__init__(*args, **kwargs)
 
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'ticket_id', 'cont_R', 'cont_C', 'estado', 'asignado_a', 'seguimiento_por', 'fecha_creacion')
     list_filter = ('estado', 'asignado_a', 'seguimiento_por')
     search_fields = ('nombre','ticket_id')
     actions = [export_as_excel]
-       
+
+    form = ItemAdminForm
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
+
+
     def get_readonly_fields(self, request, obj=None):
         if request.user.role == 'soporte':
             return ('ticket_id', 'cont_R', 'cont_C','estado','asignado_a','seguimiento_por','nombre')
