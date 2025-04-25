@@ -53,7 +53,7 @@ class Item(models.Model):
         ('transmitido', 'transmitido'),
     ]
     nombre = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True, verbose_name="Registro transmision")
     cont_R = models.CharField(max_length=50, blank=True, null=True)
     cont_C = models.CharField(max_length=50, blank=True, null=True)
     estado = models.CharField(
