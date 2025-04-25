@@ -52,7 +52,7 @@ class Item(models.Model):
         ('backup', 'backup'),
         ('transmitido', 'transmitido'),
     ]
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100,verbose_name="Etiqueta")
     description = models.TextField(blank=True, null=True, verbose_name="Registro transmision")
     cont_R = models.CharField(max_length=50, blank=True, null=True)
     cont_C = models.CharField(max_length=50, blank=True, null=True)
@@ -63,7 +63,7 @@ class Item(models.Model):
     )
     soporte = models.ForeignKey(User, related_name='soporte_items', on_delete=models.SET_NULL, null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    ticket_id = models.CharField(max_length=20, unique=True, blank=True)
+    ticket_id = models.CharField(max_length=20, unique=True, blank=True,verbose_name="Estacion")
     asignado_a = models.ForeignKey(User, related_name='operador_tickets', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'operador'})
     seguimiento_por = models.ForeignKey(User, related_name='coordi_tickets', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to={'role': 'coordi'})
     codigo_qr = models.ImageField(upload_to='qrcodes/', blank=True, null=True)
