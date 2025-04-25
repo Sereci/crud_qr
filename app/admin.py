@@ -149,7 +149,7 @@ class ItemAdmin(admin.ModelAdmin):
        
     def get_readonly_fields(self, request, obj=None):
         if request.user.role == 'soporte':
-            return ('ticket_id', 'cont_R', 'cont_C','estado','asignado_a','seguimiento_por')
+            return ('ticket_id', 'cont_R', 'cont_C','estado','asignado_a','seguimiento_por','nombre')
         return super().get_readonly_fields(request, obj)
 
     def mostrar_qr(self, obj):
