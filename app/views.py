@@ -41,14 +41,15 @@ from reportlab.lib.pagesizes import letter
 
 from django.shortcuts import render
 from .models import Oficina, Item
-
-
+#
+from django.contrib import admin
 #
 import qrcode
 import io
 from fpdf import FPDF
 from PIL import Image
 #
+
 def generar_todos_qrs(request):
     # Crear carpeta de QR si no existe
     qr_folder = os.path.join(settings.BASE_DIR, 'qrcodes')

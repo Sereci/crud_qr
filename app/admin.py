@@ -15,7 +15,12 @@ from datetime import datetime
 
 User = get_user_model()
 
-
+from django.http import FileResponse
+import qrcode
+from fpdf import FPDF
+import os
+import io
+from django.conf import settings
 # -------------------- EXPORTACIÓN --------------------
 def export_as_excel(modeladmin, request, queryset):
     from openpyxl import Workbook
@@ -162,11 +167,54 @@ class ItemAdminForm(forms.ModelForm):
 
         return nueva
 
+
+
+def generar_qrs_pdf(modeladmin, request, queryset):
+    qr_folder = os.path.join(settings.BASE_DIR, 'qrcodes')
+    os.makedirs(qr_folder, exist_ok=True)
+
+    pdf = FPDF()
+
+    for item in queryset:
+        qr = qrcode.make(f"http://34.176.143.16:8000/api/view/items/{item.id}/")
+        qr_filename = f'{item.id}.png'
+        qr_path = os.path.join(qr_folder, qr_filename)
+        qr.save(qr_path)
+
+        for _ in range(3):  # Repetir 3 veces
+            pdf.add_page()
+            pdf.set_margins(left=10, top=10, right=10)
+            pdf.image(qr_path, x=30, y=20, w=150, h=150)
+            pdf.ln(160)
+
+            pdf.set_font("Arial", style="B", size=80)
+            pdf.cell(0, 20, txt=f"{item.ticket_id}", ln=True, align='C')
+            pdf.ln(8)
+
+            pdf.set_font("Arial", style="B", size=50)
+            pdf.cell(0, 20, txt=f"R: {item.cont_R}  C: {item.cont_C}", ln=True, align='C')
+            pdf.ln(8)
+
+            pdf.set_font("Arial", style="B", size=30)
+            pdf.cell(0, 15, txt=f"{item.nombre}", ln=True, align='C')
+            pdf.ln(6)
+
+            asignado_a = item.asignado_a.username if item.asignado_a else "_______________________"
+            pdf.set_font("Arial", style="", size=30)
+            pdf.cell(0, 15, txt=f"{asignado_a}", ln=True, align='C')
+
+    pdf_bytes = pdf.output(dest='S').encode('latin1')
+    pdf_output = io.BytesIO(pdf_bytes)
+
+    return FileResponse(pdf_output, as_attachment=True, filename='qrs_seleccionados.pdf')
+
+generar_qrs_pdf.short_description = "Generar QRs en un solo PDF"
+
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'ticket_id', 'cont_R', 'cont_C', 'estado', 'asignado_a', 'seguimiento_por', 'fecha_creacion')
     list_filter = ('estado', 'asignado_a', 'seguimiento_por')
     search_fields = ('nombre', 'ticket_id')
-    actions = [export_as_excel]
+    actions = [export_as_excel, generar_qrs_pdf]  # <-- Agregamos aquí la nueva acción
     form = ItemAdminForm
 
     def get_form(self, request, obj=None, **kwargs):
