@@ -50,7 +50,7 @@ class UserAdminForm(forms.ModelForm):
 
     def clean_role(self):
         role = self.cleaned_data.get('role')
-        if role not in ['admin', 'soporte', 'operador', 'coordi']:
+        if role not in ['admin', 'soporte', 'operador', 'coordi', 'logistica']:
             raise forms.ValidationError("Rol inválido")
         return role
 
@@ -165,8 +165,8 @@ class ItemAdmin(admin.ModelAdmin):
         return WrappedForm
 
     def get_readonly_fields(self, request, obj=None):
-        if request.user.role == 'soporte':
-            return ('ticket_id', 'cont_R', 'cont_C', 'estado', 'asignado_a', 'seguimiento_por', 'nombre')
+        if request.user.role in ('soporte', 'logistica','operador','coordi'):
+            return ('ticket_id', 'cont_R', 'cont_C', 'estado', 'asignado_a', 'seguimiento_por', 'nombre','soporte','codigo_qr')
         return super().get_readonly_fields(request, obj)
 
     def mostrar_qr(self, obj):

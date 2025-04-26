@@ -29,6 +29,7 @@ class User(AbstractUser):
         ('soporte', 'Soporte'),
         ('coordi', 'Coordinador'),
         ('operador', 'Operador'),
+        ('logistica', 'Logística'),
     ]
     #role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='operador')
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='operador')
