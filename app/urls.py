@@ -44,5 +44,7 @@ urlpatterns = [
     #path('generar-pdf/', views.generar_pdf_items_qr, name='generar_pdf'),
     path('generar-pdf-item/<int:item_id>/', views.generar_pdf_item_qr, name='generar_pdf_item'),
     path('view/items/<int:item_id>/', views.item_detail_html, name='item_detail_html'),
+    # generar todos los qrs
+    path('generartodosqrs/', views.generar_todos_qrs, name='generar_todos_qrs'),
 
 ]

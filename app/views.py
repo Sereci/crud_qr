@@ -41,25 +41,87 @@ from reportlab.lib.pagesizes import letter
 
 from django.shortcuts import render
 from .models import Oficina, Item
+
+
 #
+import qrcode
+import io
+from fpdf import FPDF
+from PIL import Image
+#
+def generar_todos_qrs(request):
+    # Crear carpeta de QR si no existe
+    qr_folder = os.path.join(settings.BASE_DIR, 'qrcodes')
+    os.makedirs(qr_folder, exist_ok=True)
+
+    # Crear objeto PDF
+    pdf = FPDF()
+    pdf.set_margins(left=10, top=10, right=10)  # márgenes más estrechos
+
+    # Obtener todos los items
+    items = Item.objects.all()
+
+    for item in items:
+        # Generar QR para este item
+        qr = qrcode.make(f"http://34.176.143.16:8000/api/view/items/{item.id}/")
+        qr_filename = f'{item.id}.png'
+        qr_path = os.path.join(qr_folder, qr_filename)
+        qr.save(qr_path)
+
+        # Repetir la misma página 3 veces
+        for _ in range(3):
+            pdf.add_page()
+
+            # Insertar la imagen QR
+            pdf.image(qr_path, x=30, y=20, w=150, h=150)
+
+            pdf.ln(160)  # Espacio después del QR
+
+            # Agregar los textos
+            pdf.set_font("Arial", style="B", size=80)
+            pdf.cell(0, 20, txt=f"{item.ticket_id}", ln=True, align='C')
+            pdf.ln(8)
+
+            pdf.set_font("Arial", style="B", size=50)
+            pdf.cell(0, 20, txt=f"R: {item.cont_R}  C: {item.cont_C}", ln=True, align='C')
+            pdf.ln(8)
+
+            pdf.set_font("Arial", style="B", size=30)
+            pdf.cell(0, 15, txt=f"{item.nombre}", ln=True, align='C')
+            pdf.ln(6)
+
+            asignado_a = item.asignado_a.username if item.asignado_a else "_______________________"
+            pdf.set_font("Arial", style="", size=30)
+            pdf.cell(0, 15, txt=f"{asignado_a}", ln=True, align='C')
+
+    # Guardar el PDF en memoria
+    pdf_bytes = pdf.output(dest='S').encode('latin1')
+    pdf_output = io.BytesIO(pdf_bytes)
+
+    # Responder como descarga
+    return FileResponse(pdf_output, as_attachment=True, filename='todos_los_qrs.pdf')
+
+
+
+
 def custom_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         print(f"Intentando iniciar sesión con: {username} - {password}")  # <-- Depuración
-        
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             print(f"Autenticación exitosa para: {user.username}")  # <-- Depuración
-           
+
             login(request, user)
             return redirect('dashboard')  # Redirige al dashboard después de iniciar sesión
         else:
             print("Autenticación fallida")  # <-- Depuración
-           
+
             return render(request, 'login.html', {'error': 'Usuario o contraseña incorrectos'})
-    
+
     return render(request, 'login.html')
 @csrf_exempt
 @login_required
@@ -110,7 +172,7 @@ def dashboard_admin(request):
     if not request.user.is_superuser:
         return JsonResponse({"error": "Acceso denegado"}, status=403)
 
-    if request.method == 'GET':  
+    if request.method == 'GET':
         users = User.objects.all()
         items = Item.objects.all()
 
@@ -122,7 +184,7 @@ def dashboard_admin(request):
                 "usuarios": UserSerializer(users, many=True).data,
                 "items": ItemSerializer(items, many=True).data
             })
-        
+
         return render(request, 'dashboard_admin.html', {
             'items': items,
             'users': users,
@@ -130,9 +192,9 @@ def dashboard_admin(request):
             'can_view_users': can_view_users,
         })
 
-    elif request.method == 'POST':  
-        if request.content_type == 'application/json':  
-            if "username" in request.data:  
+    elif request.method == 'POST':
+        if request.content_type == 'application/json':
+            if "username" in request.data:
                 serializer = UserSerializer(data=request.data)
             else:
                 serializer = ItemSerializer(data=request.data)
@@ -152,7 +214,7 @@ def dashboard_admin(request):
 def custom_logout(request):
         logout(request)
         return redirect('login')
-    
+
 
 #@csrf_exempt
 @login_required
@@ -169,7 +231,7 @@ def actualizar_estado_tarea(request):
             return JsonResponse({'success': True, 'message': 'Estado actualizado'})
         except Item.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Tarea no encontrada'})
-    
+
     return JsonResponse({'success': False, 'message': 'Método no permitido'})
 
 def cambiar_estado(request, item_id, nuevo_estado):
@@ -208,7 +270,7 @@ class ItemViewSet(viewsets.ModelViewSet):
     #    """Permite actualizar el estado del ticket y regenerar el QR si es necesario"""
     #    item = serializer.save()
     #    if 'estado' in self.request.data:
-    #        item.generate_qr_code()  # Regenera el QR si cambia el estado    
+    #        item.generate_qr_code()  # Regenera el QR si cambia el estado
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
     authentication_classes = [TokenAuthentication]
@@ -225,7 +287,7 @@ class ItemViewSet(viewsets.ModelViewSet):
         ESTADOS_VALIDOS = ['pendiente', 'en_progreso', 'completado']
         if estado and estado not in ESTADOS_VALIDOS:
             return Response({"error": "Estado inválido"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Validar y asignar operador (asignado_a)
         if asignado_a_id:
             try:
@@ -247,7 +309,7 @@ class ItemViewSet(viewsets.ModelViewSet):
             item.estado = estado
         item.save()
         return Response(ItemSerializer(item).data)
-    
+
 
 # Serializador para usuarios
 class UserSerializer(serializers.ModelSerializer):
@@ -271,8 +333,8 @@ class ComplementoViewSet(viewsets.ModelViewSet):
         """Solo soporte puede agregar complementos"""
         if self.request.user.role != 'soporte':
             raise PermissionDenied("Solo los usuarios de soporte pueden agregar complementos")
-        serializer.save()   
- # listar todos los items        
+        serializer.save()
+ # listar todos los items
 def lista_items(request):
     items = Item.objects.all().order_by('-fecha_creacion')
     return render(request, 'app/lista_items.html', {'items': items})
@@ -290,7 +352,7 @@ def generar_pdf_item_qr(request, item_id):
     print(qr_filename) # imprimir el nombre del
     qr_path = os.path.join(settings.MEDIA_ROOT, qr_filename)
 
-    # Crear PDF en memoria configurar el tamaño 
+    # Crear PDF en memoria configurar el tamaño
     from io import BytesIO
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=A5)
@@ -319,10 +381,10 @@ def generar_pdf_item_qr(request, item_id):
 
     #texto arriba
     p.drawString(40, 442, f"{item.ticket_id}")
-    
+
      #texto medio
     p.drawString(40, 262, f"{item.ticket_id}")
-   
+
      #texto abajo
     p.drawString(40, 70, f"{item.ticket_id}")
 
@@ -340,7 +402,7 @@ def generar_pdf_item_qr(request, item_id):
     p.drawString(100, 70, f"      R: {item.cont_R}   C:{item.cont_C}")
     p.drawString(40, 52, f"A: {asignado_a}")
     p.drawString(40, 36, f"Equipo: {item.nombre}")
-    
+
     p.showPage()
     p.save()
 
