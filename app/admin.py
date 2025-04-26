@@ -9,6 +9,9 @@ import openpyxl
 from django.http import HttpResponse
 from django.urls import path
 from django.shortcuts import render, get_object_or_404
+from django.utils.timezone import localtime
+import pytz
+from datetime import datetime
 
 User = get_user_model()
 
@@ -142,7 +145,18 @@ class ItemAdminForm(forms.ModelForm):
         # Si se agregó algo nuevo, anexar firma
         if var3 >= var1:
             username = self.user.username if self.user else "desconocido"
-            timestamp = timezone.now().strftime("%d/%m/%Y %H:%M:%S")
+
+            now = timezone.now()
+
+            if timezone.is_naive(now):
+                # Si el now es naive, se le asigna manualmente el timezone
+                bolivia = pytz.timezone('America/La_Paz')
+                now = bolivia.localize(now)
+
+            # Ahora aplicamos localtime
+            now = timezone.localtime(now)
+
+            timestamp = now.strftime("%d/%m/%Y %H:%M:%S")
             firma = f"\n{timestamp} {username}\n" + "-" * 46 + "\n"
             nueva = nueva + firma
 
