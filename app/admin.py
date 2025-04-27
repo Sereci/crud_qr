@@ -21,6 +21,9 @@ from fpdf import FPDF
 import os
 import io
 from django.conf import settings
+from .models import Transmision
+from .models import Soporte
+
 # -------------------- EXPORTACIÓN --------------------
 def export_as_excel(modeladmin, request, queryset):
     from openpyxl import Workbook
@@ -49,7 +52,65 @@ def export_as_excel(modeladmin, request, queryset):
 
 export_as_excel.short_description = "Exportar seleccionados a Excel"
 
+# -------------------- Soporte Tecnico realizado --------------------
+@admin.register(Soporte)
+class SoporteAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_soporte',
+        'id_estacion',
+        'actividad',
+        'lugar',
+        'tipo',
+        'modelo',
+        'estado',
+        'fecha_hora_registro',
+    )
+    list_filter = (
+        'actividad',
+        'lugar',
+        'tipo',
+        'modelo',
+        'estado',
+        'fecha_hora_registro',
+    )
+    search_fields = (
+        'id_soporte__username',
+        'id_soporte__first_name',
+        'id_soporte__last_name',
+        'id_estacion__nombre',  # Asumiendo que 'Item' tiene un campo 'nombre'
+        'detalle',
+    )
+    date_hierarchy = 'fecha_hora_registro'
+    ordering = ('-fecha_hora_registro',)
+    autocomplete_fields = ['id_soporte', 'id_estacion']
+    list_per_page = 25
 
+    fieldsets = (
+        ('Datos de Soporte', {
+            'fields': ('id_soporte', 'id_estacion')
+        }),
+        ('Información de la Actividad', {
+            'fields': ('actividad', 'lugar', 'tipo', 'modelo', 'estado', 'detalle')
+        }),
+        ('Tiempos', {
+            'fields': ('fecha_hora_registro',),
+        }),
+    )
+    readonly_fields = ('fecha_hora_registro',)
+
+# -------------------- Transmision --------------------
+class TransmisionAdmin(admin.ModelAdmin):
+    readonly_fields = ('id_soporte',)  # Para que se vea pero no se pueda cambiar
+    list_display = ('id_estacion', 'id_soporte', 'fecha_transmision', 'r_final', 'c_final')
+    list_filter = ('fecha_transmision',)
+    search_fields = ('id_estacion__ticket_id', 'id_soporte__username', 'r_final', 'c_final')
+
+    def save_model(self, request, obj, form, change):
+        if not obj.id_soporte:
+            obj.id_soporte = request.user  # Asigna automáticamente el usuario logueado
+        super().save_model(request, obj, form, change)
+
+admin.site.register(Transmision, TransmisionAdmin)
 # -------------------- USER --------------------
 class UserAdminForm(forms.ModelForm):
     class Meta:

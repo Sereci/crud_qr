@@ -110,20 +110,26 @@ def custom_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        print(f"Intentando iniciar sesión con: {username} - {password}")  # <-- Depuración
+        print(f"Intentando iniciar sesión con: {username} - {password}")  # Depuración
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            print(f"Autenticación exitosa para: {user.username}")  # <-- Depuración
+            print(f"Autenticación exitosa para: {user.username}")  # Depuración
 
             login(request, user)
-            return redirect('dashboard')  # Redirige al dashboard después de iniciar sesión
-        else:
-            print("Autenticación fallida")  # <-- Depuración
 
+            # Redirigir según el rol
+            if user.role == 'soporte':
+                return redirect('bienvenidaSoporte')  # Redirige al soporte a su página de bienvenida
+            else:
+                return redirect('dashboard')  # Otros roles van al dashboard
+
+        else:
+            print("Autenticación fallida")  # Depuración
             return render(request, 'login.html', {'error': 'Usuario o contraseña incorrectos'})
 
     return render(request, 'login.html')
+
 @csrf_exempt
 @login_required
 def dashboard(request):
@@ -216,6 +222,9 @@ def custom_logout(request):
         logout(request)
         return redirect('login')
 
+@login_required
+def bienvenida_soporte(request):
+    return render(request, 'soporteView/index.html')  # donde copiaste el html
 
 #@csrf_exempt
 @login_required

@@ -47,4 +47,7 @@ urlpatterns = [
     # generar todos los qrs
     path('generartodosqrs/', views.generar_todos_qrs, name='generar_todos_qrs'),
 
+    #bienvenida soporte
+    path('soporte/bienvenida/', views.bienvenida_soporte, name='bienvenidaSoporte'),
+
 ]
