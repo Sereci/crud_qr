@@ -49,5 +49,8 @@ urlpatterns = [
 
     #bienvenida soporte
     path('soporte/bienvenida/', views.bienvenida_soporte, name='bienvenidaSoporte'),
-
+    #vista trasmision
+    path('soporte/transmision/', views.transmision_soporte, name='transmisionSoporte'),
+    #vista reportes
+    path('soporte/reporte/', views.reporte_soporte, name='reporteSoporte'),
 ]

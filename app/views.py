@@ -422,3 +422,9 @@ def generar_pdf_item_qr(request, item_id):
 def item_detail_html(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     return render(request, 'app/item_detail.html', {'item': item})
+
+def transmision_soporte(request):
+    return render(request, 'soporteView/transmision.html')
+
+def reporte_soporte(request):
+    return render(request, 'soporteView/reporte.html')
