@@ -135,7 +135,7 @@ class Transmision(models.Model):
     r_final = models.CharField(max_length=250, null=False)
     c_final = models.CharField(max_length=250, null=False)
     observaciones = models.TextField(blank=True, null=True)
-
+    fotografia = models.ImageField(upload_to='transmisiones_fotos/', blank=True, null=True)
     fecha_transmision = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
